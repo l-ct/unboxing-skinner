@@ -1,0 +1,16 @@
+html, body {
+    background-color: #fff;
+}
+
+body {
+    line-height: 0;
+    margin: 0;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}

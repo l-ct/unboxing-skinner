@@ -1,0 +1,7 @@
+/_notes
+.DS_Store
+.dropbox
+Icon?
+.jshintrc
+/node_modules
+/.env
