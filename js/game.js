@@ -91,12 +91,11 @@ function setup(){
         }
 
         let ctx
-        // alpha maybe only used particles
         // setting alpha to false may speed things up in some browsers
-        // if(id != 'particles')
-        //     ctx = canvas.getContext('2d', { alpha: false })
-        // else
-        ctx = canvas.getContext('2d')
+        if(id == 'circles')
+            ctx = canvas.getContext('2d', { alpha: false })
+        else
+            ctx = canvas.getContext('2d')
 
         if(id != 'particles'){
             ctx.scale(pixels, pixels)
@@ -117,7 +116,8 @@ function setup(){
 
 function redrawRectangles(){
     ctx = canvii.rectangles
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
     // rectangles should be drawn in order
     for(let i=0; i<rectangles.length; i++){
         rectangles[i].draw(ctx)
@@ -126,9 +126,11 @@ function redrawRectangles(){
 
 function drawCircles(){
 
-    // redraw background with transparent background
+    // circles canvas has no alpha
     const ctx = canvii.circles
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    // redraw background with opaque white background
+    ctx.fillStyle = 'rgb(255,255,255)'
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
     for(let c = circles.length - 1; c >= 0; c--){
         circles[c].move()
@@ -138,11 +140,14 @@ function drawCircles(){
             for(let e=0; e<edges.length; e++){
                 if(collision(edges[e], circles[c])){
 
+                    // calculate circle bounce angle
                     const angle = edges[e][1].clone().subtract(edges[e][0]).angle()
                     const angleDiff = angle - circles[c].dir.angle()
                     circles[c].dir.rotate(angleDiff * 2)
+
                     explodeRectangle(rectangles[r].edges, canvii.particles)
 
+                    // remove rectangle
                     rectangles.splice(r, 1)
                     redrawRectangles()
                     break
@@ -151,7 +156,9 @@ function drawCircles(){
         }
     }
 
+    // infinite loop
     requestAnimationFrame(drawCircles);
+
 }
 
 
@@ -159,23 +166,16 @@ function drawCircles(){
 
 // -------------------------------------------------------- collisions
 
-// https://stackoverflow.com/questions/21089959/detecting-collision-of-rectangle-with-circle
-// https://stackoverflow.com/questions/10957689/collision-detection-between-a-line-and-a-circle-in-javascript
-
 function collision(line, circle){
     let point = lineCircleCollision(
         line[0].x, line[0].y,
         line[1].x, line[1].y,
         circle.pos.x, circle.pos.y, RADII
     );
-
-    // if(point)
-    //     explodeParticles(point, canvii.particles);
-    if(point === null) return false
-    return true
+    // not really doing much with point
+    return point !== null
 }
 
-
-
-
-
+// some references
+// https://stackoverflow.com/questions/21089959/detecting-collision-of-rectangle-with-circle
+// https://stackoverflow.com/questions/10957689/collision-detection-between-a-line-and-a-circle-in-javascript
